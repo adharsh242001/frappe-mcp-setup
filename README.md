@@ -209,3 +209,28 @@ MIT License - Use it, modify it, share it.
   <strong>Star the repo if this helped you!</strong><br>
   <a href="https://github.com/adharsh242001/frappe-mcp-setup">⭐ GitHub</a>
 </p>
+
+## Python MCP Server Alternative
+
+If Node.js 20+ is not available, use the Python MCP server:
+
+```bash
+# Install MCP
+/mnt/d/Private/frappe/frappe-bench/env/bin/pip install mcp
+
+# Configure Claude Code
+# Add to ~/.claude.jsonc:
+{
+  "mcpServers": {
+    "frappe": {
+      "command": "/path/to/frappe-bench/env/bin/python",
+      "args": ["/path/to/frappe-mcp-server.py"],
+      "env": {
+        "FRAPPE_URL": "http://localhost:8000",
+        "FRAPPE_API_KEY": "your-api-key",
+        "FRAPPE_API_SECRET": "your-api-secret"
+      }
+    }
+  }
+}
+```
