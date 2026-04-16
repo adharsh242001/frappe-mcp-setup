@@ -9,13 +9,13 @@ One-command setup that configures MCP servers with token-aware category selectio
 ### One-liner (fastest)
 
 ```bash
-curl -fsSL https://your-repo/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/adharsh242001/frappe-mcp-setup/main/install.sh | bash
 ```
 
 ### Or with inline arguments
 
 ```bash
-curl -fsSL https://your-repo/install.sh | bash -s -- \
+curl -fsSL https://raw.githubusercontent.com/adharsh242001/frappe-mcp-setup/main/install.sh | bash -s -- \
   --non-interactive \
   --url "https://erp.example.com" \
   --api-key "your-api-key" \
@@ -27,7 +27,7 @@ curl -fsSL https://your-repo/install.sh | bash -s -- \
 ### Manual Setup
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/frappe-mcp-setup.git
+git clone https://github.com/adharsh242001/frappe-mcp-setup.git
 cd frappe-mcp-setup
 chmod +x setup-frappe-mcp.sh
 ./setup-frappe-mcp.sh

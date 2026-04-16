@@ -10,7 +10,7 @@ set -e
 
 # Script metadata
 VERSION="2.0.0"
-SCRIPT_URL="https://raw.githubusercontent.com/YOUR-USERNAME/frappe-mcp-setup/main/setup-frappe-mcp.sh"
+SCRIPT_URL="https://raw.githubusercontent.com/adharsh242001/frappe-mcp-setup/main/setup-frappe-mcp.sh"
 
 # Color codes
 RED='\033[0;31m'

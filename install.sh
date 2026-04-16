@@ -1,15 +1,15 @@
 #!/bin/bash
 #===============================================================================
 # One-line installer for Frappe/ERPNext MCP Setup
-# Usage: curl -fsSL https://your-repo/install.sh | bash
-#        curl -fsSL https://your-repo/install.sh | bash -s -- --non-interactive ...
+# Usage: curl -fsSL https://raw.githubusercontent.com/adharsh242001/frappe-mcp-setup/main/install.sh | bash
+#        curl -fsSL https://raw.githubusercontent.com/adharsh242001/frappe-mcp-setup/main/install.sh | bash -s -- --non-interactive ...
 #===============================================================================
 
 set -e
 
 INSTALLER_VERSION="1.0.0"
 INSTALL_DIR="${HOME}/frappe-mcp-setup"
-REPO_URL="${REPO_URL:-https://raw.githubusercontent.com/YOUR-USERNAME/frappe-mcp-setup/main}"
+REPO_URL="${REPO_URL:-https://raw.githubusercontent.com/adharsh242001/frappe-mcp-setup/main}"
 
 # Colors
 RED='\033[0;31m'
@@ -68,7 +68,7 @@ if [ -d "$INSTALL_DIR" ]; then
     cd "$INSTALL_DIR"
     git pull origin main 2>/dev/null || true
 else
-    git clone --depth 1 https://github.com/YOUR-USERNAME/frappe-mcp-setup.git "$INSTALL_DIR"
+    git clone --depth 1 https://github.com/adharsh242001/frappe-mcp-setup.git "$INSTALL_DIR"
     cd "$INSTALL_DIR"
 fi
 
