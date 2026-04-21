@@ -1,54 +1,67 @@
-# 🚀 Frappe/ERPNext MCP Setup
+# Frappe/ERPNext MCP Setup
 
-### AI-Powered Development for Frappe/ERPNext
+AI-assisted development setup for Frappe and ERPNext. This repository configures MCP servers for Claude Code and OpenCode so your agent can query ERPNext data, create or inspect documents, and use Frappe development context while working in your project.
 
-Connect Claude Code or OpenCode to your ERPNext instance with **one command**. Get 120+ tools for data operations, DocType creation, and Frappe development context.
+## What Gets Installed
 
----
+| MCP server | Source | Purpose |
+| --- | --- | --- |
+| `erpnext` | `@casys/mcp-erpnext` via `npx` | ERPNext data operations, reports, and module-specific tools |
+| `frappe` | `DragonPow/frappe-mcp-server` | Frappe development context, DocType help, hooks, bench guidance |
 
-## ⚡ One-Click Setup (30 seconds)
+The setup script can write config for Claude Code, OpenCode, or both.
+
+## Requirements
+
+- Bash-compatible shell
+- `curl`
+- `git`
+- Node.js 20 or newer, for `@casys/mcp-erpnext`
+- Python 3.10 or newer, for the Frappe development MCP server
+- `jq`, recommended for safe JSON config merging
+- ERPNext URL plus API key and API secret
+
+## Get ERPNext API Keys
+
+1. Log in to ERPNext.
+2. Open **User Menu -> My Settings**.
+3. Scroll to **API Access**.
+4. Click **Generate Keys**.
+5. Copy the API key and API secret.
+
+Use an account with only the permissions your agent should have.
+
+## Quick Start
+
+Install the setup project:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/adharsh242001/frappe-mcp-setup/main/install.sh | bash
 ```
 
-**That's it.** The script will:
-1. Install dependencies
-2. Ask for your ERPNext URL & API keys
-3. Configure Claude Code + OpenCode with MCP servers
-4. Show token estimates for your selected categories
-
----
-
-## 🔑 Before You Start
-
-Get your ERPNext API keys:
-
-1. Login to ERPNext
-2. Click **User Menu → My Settings**
-3. Scroll to **API Access**
-4. Click **Generate Keys**
-5. Copy **API Key** and **API Secret**
-
----
-
-## 📋 Setup Options
-
-### Option 1: Interactive (Recommended for first time)
+Then run the interactive setup:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/adharsh242001/frappe-mcp-setup/main/install.sh | bash
+cd ~/frappe-mcp-setup
+./setup-frappe-mcp.sh
 ```
 
-You'll be guided through:
-- ERPNext URL & credentials
-- Category selection with token calculator
-- AI client choice (Claude Code/OpenCode/Both)
+The script will:
 
-### Option 2: Non-Interactive (For automation)
+1. Check local dependencies.
+2. Ask for ERPNext URL and API credentials.
+3. Let you choose ERPNext tool categories.
+4. Clone or update the Frappe MCP server.
+5. Generate Claude Code and/or OpenCode MCP config.
+6. Create an `AGENTS.md` helper file for Frappe/ERPNext projects.
+
+## Non-Interactive Setup
+
+Use this for repeatable local setup, containers, or CI environments:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/adharsh242001/frappe-mcp-setup/main/install.sh | bash -s -- \
+cd ~/frappe-mcp-setup
+./setup-frappe-mcp.sh --non-interactive \
   --url "https://your-site.erpnext.com" \
   --api-key "your-api-key" \
   --api-secret "your-api-secret" \
@@ -56,175 +69,153 @@ curl -fsSL https://raw.githubusercontent.com/adharsh242001/frappe-mcp-setup/main
   --client both
 ```
 
-### Option 3: Auto-Detect (Smart)
+You can also select categories directly:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/adharsh242001/frappe-mcp-setup/main/install.sh | bash -s -- \
+./setup-frappe-mcp.sh --non-interactive \
+  --url "https://your-site.erpnext.com" \
+  --api-key "your-api-key" \
+  --api-secret "your-api-secret" \
+  --categories sales,inventory,operations \
+  --client claude
+```
+
+## Auto-Detect Categories
+
+Auto-detect scans your ERPNext instance and chooses categories based on enabled or active modules:
+
+```bash
+./setup-frappe-mcp.sh --non-interactive \
   --url "https://your-site.erpnext.com" \
   --api-key "your-api-key" \
   --api-secret "your-api-secret" \
   --auto-detect
 ```
 
-The script scans your ERPNext instance and automatically selects the right categories based on what modules you're using.
+## Category Presets
 
----
+Choose the smallest preset that covers your current work. Smaller presets keep agent context faster and cheaper.
 
-## ✨ Features
+| Preset | Categories | Estimated tokens |
+| --- | --- | --- |
+| `minimal` | `operations` | ~1,750 |
+| `standard` | `sales,inventory,operations` | ~8,480 |
+| `dev_focus` | `operations,project,kanban` | ~4,330 |
+| `full` | All categories | ~26,760 |
 
-| Feature | What It Does |
-|---------|--------------|
-| **Token Calculator** | Shows exact token cost before you commit |
-| **Auto-Detect** | Scans ERPNext to suggest categories |
-| **Smart Merge** | Adds MCP servers without breaking existing configs |
-| **120+ Tools** | Full ERPNext CRUD, reports, analytics |
-| **Frappe Context** | DocType creation, bench commands, hooks docs |
+Available categories:
 
----
-
-## 🎯 What You Get
-
-### MCP Servers
-
-| Server | Tools | What It Does |
-|--------|-------|--------------|
-| `@casys/mcp-erpnext` | 120 | ERPNext data: customers, orders, inventory, reports |
-| `frappe-mcp-server` | 6 resources | Frappe docs: ORM, hooks, bench commands |
-
-### AI Clients
-
-| Client | Cost | Best For |
-|--------|------|----------|
-| **Claude Code** | Subscription | Complex agentic workflows |
-| **OpenCode** | Free | Quick edits, local development |
-
----
-
-## 📊 Token Presets
-
-Choose how much context you want. More tokens = more capabilities but higher API cost.
-
-| Preset | Categories | Est. Tokens | Speed |
-|--------|------------|-------------|-------|
-| `minimal` | Operations only | ~1,750 | ⚡ Fast |
-| `standard` ⭐ | Sales + Inventory + Operations | ~8,480 | ⚡ Fast |
-| `dev_focus` | Operations + Project + Kanban | ~4,330 | ⚡ Fast |
-| `full` | All 14 categories | ~26,760 | 🐢 Normal |
-
-> 💡 **Pro tip:** Start with `standard`, add categories as needed.
-
----
-
-## 💬 Usage Examples
-
-After setup, just talk to your AI:
-
-```
-"Show me all open Sales Orders from this month"
-"Create a Customer Portal DocType with dashboard"
-"Run a stock balance report for the main warehouse"
-"Add a custom field to Sales Order for project reference"
+```text
+sales,purchasing,inventory,accounting,hr,project,delivery,manufacturing,crm,assets,operations,kanban,analytics,setup
 ```
 
----
+## Generated Config
 
-## 🔧 Manual Installation
+### Claude Code
+
+The script writes MCP server entries to `~/.claude/settings.jsonc` when that file exists, otherwise to `~/.claude.jsonc`.
+
+Example shape:
+
+```jsonc
+{
+  "mcpServers": {
+    "erpnext": {
+      "command": "npx",
+      "args": ["-y", "@casys/mcp-erpnext", "--categories=sales,inventory,operations"],
+      "env": {
+        "ERPNEXT_URL": "https://your-site.erpnext.com",
+        "ERPNEXT_API_KEY": "your-api-key",
+        "ERPNEXT_API_SECRET": "your-api-secret"
+      }
+    },
+    "frappe": {
+      "command": "python",
+      "args": ["~/frappe-mcp-server/server.py"],
+      "env": {
+        "FRAPPE_URL": "https://your-site.erpnext.com",
+        "FRAPPE_API_KEY": "your-api-key",
+        "FRAPPE_API_SECRET": "your-api-secret"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Code after setup, then verify:
 
 ```bash
-git clone https://github.com/adharsh242001/frappe-mcp-setup.git
-cd frappe-mcp-setup
-chmod +x setup-frappe-mcp.sh
-./setup-frappe-mcp.sh
+claude mcp list
 ```
 
----
+### OpenCode
 
-## 🛠️ Command Reference
+The script writes `opencode.jsonc` in the setup directory.
+
+Start OpenCode from that directory or copy the config into the project where you want to use it:
+
+```bash
+cd ~/frappe-mcp-setup
+opencode
+```
+
+## Command Reference
 
 ```bash
 ./setup-frappe-mcp.sh [OPTIONS]
 
 Options:
-  --non-interactive     Skip all prompts (CI/CD)
-  --url URL             ERPNext URL
-  --api-key KEY        API Key
-  --api-secret SECRET  API Secret
-  --preset NAME        minimal | standard | dev_focus | full
-  --categories CATS    Comma-separated: sales,inventory,hr
-  --client CLIENT      claude | opencode | both
-  --merge STRATEGY     append | newfile | overwrite
-  --auto-detect        Scan ERPNext to auto-select categories
-  --help, -h           Show this help
+  --non-interactive, -y  Run without prompts
+  --verbose, -v          Enable verbose output
+  --url URL              ERPNext URL
+  --api-key KEY          ERPNext API key
+  --api-secret SECRET    ERPNext API secret
+  --categories CATS      Comma-separated categories
+  --preset NAME          minimal | standard | dev_focus | full
+  --client CLIENT        claude | opencode | both
+  --merge STRATEGY       append | newfile | overwrite
+  --auto-detect          Scan ERPNext and select categories
+  --help, -h             Show help
 ```
 
----
+## Using the MCP Servers
 
-## 📁 After Setup
+After setup, ask your agent for ERPNext and Frappe tasks in plain language:
 
-```
-Your Project/
-├── opencode.jsonc          # MCP config (auto-created)
-├── AGENTS.md               # AI guidelines (optional)
-└── ~/.claude.jsonc         # Claude Code config
-```
-
----
-
-## ❓ Troubleshooting
-
-**MCP not connecting?**
-```bash
-# Check status
-claude mcp list
-
-# Restart Claude Code terminal
+```text
+Show me open Sales Orders from this month.
+Check stock balance for Stores - Company.
+Create a draft Customer record for ABC Corp.
+Explain how to add a validate hook to Sales Order.
+Create a custom DocType for project milestones.
 ```
 
-**Token cost too high?**
-- Use `--preset minimal` to reduce categories
-- Check `/context` in Claude Code for usage
+For write operations, verify the target document and state first. Prefer draft documents while testing, and avoid submitting, cancelling, or bulk-changing production data until you have reviewed the action.
 
-**Need help?**
-- [Frappe Forum](https://discuss.frappe.io)
-- [MCP Protocol](https://modelcontextprotocol.io)
+## Lightweight Python MCP Server
 
----
+This repo also includes `frappe-mcp-server.py`, a small fallback MCP server with three tools:
 
-## 🙏 Credits
+- `frappe_ping`
+- `frappe_list_documents`
+- `frappe_get_document`
 
-Built with love for the Frappe/ERPNext community.
+Use it when you only need basic Frappe REST access or cannot use the cloned `DragonPow/frappe-mcp-server`.
 
-- [@casys/mcp-erpnext](https://github.com/Casys-AI/mcp-erpnext) - 120 ERPNext tools
-- [DragonPow/frappe-mcp-server](https://github.com/DragonPow/frappe-mcp-server) - Frappe context
-
----
-
-## 📄 License
-
-MIT License - Use it, modify it, share it.
-
----
-
-<p align="center">
-  <strong>Star the repo if this helped you!</strong><br>
-  <a href="https://github.com/adharsh242001/frappe-mcp-setup">⭐ GitHub</a>
-</p>
-
-## Python MCP Server Alternative
-
-If Node.js 20+ is not available, use the Python MCP server:
+Install dependencies in the Python environment you want Claude Code or OpenCode to use:
 
 ```bash
-# Install MCP
-/mnt/d/Private/frappe/frappe-bench/env/bin/pip install mcp
+python -m pip install mcp requests
+```
 
-# Configure Claude Code
-# Add to ~/.claude.jsonc:
+Claude Code example:
+
+```jsonc
 {
   "mcpServers": {
-    "frappe": {
-      "command": "/path/to/frappe-bench/env/bin/python",
-      "args": ["/path/to/frappe-mcp-server.py"],
+    "frappe-basic": {
+      "command": "python",
+      "args": ["/absolute/path/to/frappe-mcp-server.py"],
       "env": {
         "FRAPPE_URL": "http://localhost:8000",
         "FRAPPE_API_KEY": "your-api-key",
@@ -234,3 +225,48 @@ If Node.js 20+ is not available, use the Python MCP server:
   }
 }
 ```
+
+## Troubleshooting
+
+### MCP Server Does Not Appear
+
+Check the generated config and restart your AI client:
+
+```bash
+claude mcp list
+```
+
+For OpenCode, make sure you start it from the directory containing `opencode.jsonc`, or place the config in your target project.
+
+### Authentication Fails
+
+- Confirm the ERPNext URL has no typo and is reachable from your machine.
+- Regenerate the API key and secret from the ERPNext user settings.
+- Confirm the user has permission for the DocTypes or reports you are asking the agent to access.
+
+### Node.js Version Error
+
+`@casys/mcp-erpnext` requires Node.js 20 or newer. Upgrade Node.js, then rerun:
+
+```bash
+./setup-frappe-mcp.sh
+```
+
+### Token Usage Is Too High
+
+Use a smaller preset:
+
+```bash
+./setup-frappe-mcp.sh --preset minimal
+```
+
+You can add more categories later by rerunning the setup script.
+
+## Credits
+
+- [`@casys/mcp-erpnext`](https://github.com/Casys-AI/mcp-erpnext)
+- [`DragonPow/frappe-mcp-server`](https://github.com/DragonPow/frappe-mcp-server)
+
+## License
+
+MIT
