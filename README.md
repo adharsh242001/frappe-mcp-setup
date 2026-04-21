@@ -6,7 +6,7 @@ AI-assisted development setup for Frappe and ERPNext. This repository configures
 
 | MCP server | Source | Purpose |
 | --- | --- | --- |
-| `erpnext` | `@casys/mcp-erpnext` via `npx` | ERPNext data operations, reports, and module-specific tools |
+| `erpnext` | `github:Casys-AI/mcp-erpnext` via `npx` | ERPNext data operations, reports, and module-specific tools |
 | `frappe` | `DragonPow/frappe-mcp-server` | Frappe development context, DocType help, hooks, bench guidance |
 
 The setup script can write config for Claude Code, OpenCode, or both.
@@ -16,7 +16,7 @@ The setup script can write config for Claude Code, OpenCode, or both.
 - Bash-compatible shell
 - `curl`
 - `git`
-- Node.js 20 or newer, for `@casys/mcp-erpnext`
+- Node.js 20 or newer, for the ERPNext MCP package
 - Python 3.10 or newer, for the Frappe development MCP server
 - `jq`, recommended for safe JSON config merging
 - ERPNext URL plus API key and API secret
@@ -55,6 +55,8 @@ The script will:
 5. Generate Claude Code and/or OpenCode MCP config.
 6. Create an `AGENTS.md` helper file for Frappe/ERPNext projects.
 
+By default, the ERPNext MCP package is loaded from `https://github.com/Casys-AI/mcp-erpnext.git` using the npm package spec `github:Casys-AI/mcp-erpnext`.
+
 ## Non-Interactive Setup
 
 Use this for repeatable local setup, containers, or CI environments:
@@ -78,6 +80,12 @@ You can also select categories directly:
   --api-secret "your-api-secret" \
   --categories sales,inventory,operations \
   --client claude
+```
+
+To use a different package source, set `ERPNEXT_MCP_PACKAGE` before running setup:
+
+```bash
+ERPNEXT_MCP_PACKAGE="@casys/mcp-erpnext" ./setup-frappe-mcp.sh
 ```
 
 ## Auto-Detect Categories
@@ -122,7 +130,7 @@ Example shape:
   "mcpServers": {
     "erpnext": {
       "command": "npx",
-      "args": ["-y", "@casys/mcp-erpnext", "--categories=sales,inventory,operations"],
+      "args": ["-y", "github:Casys-AI/mcp-erpnext", "--categories=sales,inventory,operations"],
       "env": {
         "ERPNEXT_URL": "https://your-site.erpnext.com",
         "ERPNEXT_API_KEY": "your-api-key",
@@ -246,7 +254,7 @@ For OpenCode, make sure you start it from the directory containing `opencode.jso
 
 ### Node.js Version Error
 
-`@casys/mcp-erpnext` requires Node.js 20 or newer. Upgrade Node.js, then rerun:
+The ERPNext MCP package requires Node.js 20 or newer. Upgrade Node.js, then rerun:
 
 ```bash
 ./setup-frappe-mcp.sh
@@ -264,7 +272,7 @@ You can add more categories later by rerunning the setup script.
 
 ## Credits
 
-- [`@casys/mcp-erpnext`](https://github.com/Casys-AI/mcp-erpnext)
+- [`Casys-AI/mcp-erpnext`](https://github.com/Casys-AI/mcp-erpnext)
 - [`DragonPow/frappe-mcp-server`](https://github.com/DragonPow/frappe-mcp-server)
 
 ## License

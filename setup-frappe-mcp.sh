@@ -39,6 +39,7 @@ FRAPPE_BENCH_PATH=""
 AI_CLIENT="both"
 CONFIG_MERGE_STRATEGY="append"
 AUTO_DETECT_MODE=false
+ERPNEXT_MCP_PACKAGE="${ERPNEXT_MCP_PACKAGE:-github:Casys-AI/mcp-erpnext}"
 
 #===============================================================================
 # CATEGORY DATA WITH ACTUAL TOKEN ESTIMATES
@@ -380,8 +381,9 @@ scan_real_tokens() {
     local temp_dir=$(mktemp -d)
     local categories_string=$(IFS=,; echo "${SELECTED_CATEGORIES[*]}")
     
-    # Start MCP server and get tool list
-    timeout 30 npx -y @casys/mcp-erpnext --categories="$categories_string" 2>/dev/null &
+    # Start MCP server and get tool list. Keep this bounded because npx can hang
+    # while resolving GitHub/npm packages on slow or restricted networks.
+    timeout 30 npx -y "$ERPNEXT_MCP_PACKAGE" --categories="$categories_string" 2>/dev/null &
     local mcp_pid=$!
     
     # Alternative: Use MCP inspector to get tool schemas
@@ -560,12 +562,13 @@ check_prerequisites() {
 install_mcp_servers() {
     print_step "2" "MCP Server Installation"
     
-    # Test @casys/mcp-erpnext
-    echo -n "Testing @casys/mcp-erpnext... "
-    if npx -y @casys/mcp-erpnext --version &>/dev/null 2>&1; then
-        print_success "@casys/mcp-erpnext ready"
+    # Test ERPNext MCP package
+    echo -n "Testing ERPNext MCP package (${ERPNEXT_MCP_PACKAGE})... "
+    if timeout 45 npx -y "$ERPNEXT_MCP_PACKAGE" --version &>/dev/null 2>&1; then
+        print_success "ERPNext MCP package ready"
     else
-        print_info "@casys/mcp-erpnext will work at runtime via npx"
+        print_warning "Could not verify ERPNext MCP package now"
+        print_info "Config will still use npx at runtime; check network access if it fails later"
     fi
     
     # Clone frappe-mcp-server
@@ -853,7 +856,7 @@ generate_claude_config() {
 {
   "erpnext": {
     "command": "npx",
-    "args": ["-y", "@casys/mcp-erpnext", "--categories=${categories}"],
+    "args": ["-y", "${ERPNEXT_MCP_PACKAGE}", "--categories=${categories}"],
     "env": {
       "ERPNEXT_URL": "${ERPNEXT_URL}",
       "ERPNEXT_API_KEY": "${ERPNEXT_API_KEY}",
@@ -922,7 +925,7 @@ generate_opencode_config() {
 {
   "erpnext": {
     "type": "local",
-    "command": ["npx", "-y", "@casys/mcp-erpnext", "--categories=${categories}"],
+    "command": ["npx", "-y", "${ERPNEXT_MCP_PACKAGE}", "--categories=${categories}"],
     "environment": {
       "ERPNEXT_URL": "${ERPNEXT_URL}",
       "ERPNEXT_API_KEY": "${ERPNEXT_API_KEY}",
