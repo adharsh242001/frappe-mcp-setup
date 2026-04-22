@@ -6,7 +6,7 @@ AI-assisted development setup for Frappe and ERPNext. This repository configures
 
 | MCP server | Source | Purpose |
 | --- | --- | --- |
-| `erpnext` | `github:Casys-AI/mcp-erpnext` via `npx` | ERPNext data operations, reports, and module-specific tools |
+| `erpnext` | `@casys/mcp-erpnext` via `npx` | ERPNext data operations, reports, and module-specific tools |
 | `frappe` | `DragonPow/frappe-mcp-server` | Frappe development context, DocType help, hooks, bench guidance |
 
 The setup script can write config for Claude Code, OpenCode, or both.
@@ -55,7 +55,7 @@ The script will:
 5. Generate Claude Code and/or OpenCode MCP config.
 6. Create an `AGENTS.md` helper file for Frappe/ERPNext projects.
 
-By default, the ERPNext MCP package is loaded from `https://github.com/Casys-AI/mcp-erpnext.git` using the npm package spec `github:Casys-AI/mcp-erpnext`.
+By default, the ERPNext MCP server runs with `npx -y @casys/mcp-erpnext`. The source repo is `https://github.com/Casys-AI/mcp-erpnext.git`, but that GitHub URL is not the package spec to put in `npx`.
 
 ## Non-Interactive Setup
 
@@ -85,7 +85,7 @@ You can also select categories directly:
 To use a different package source, set `ERPNEXT_MCP_PACKAGE` before running setup:
 
 ```bash
-ERPNEXT_MCP_PACKAGE="@casys/mcp-erpnext" ./setup-frappe-mcp.sh
+ERPNEXT_MCP_PACKAGE="@casys/mcp-erpnext@latest" ./setup-frappe-mcp.sh
 ```
 
 ## Auto-Detect Categories
@@ -130,7 +130,7 @@ Example shape:
   "mcpServers": {
     "erpnext": {
       "command": "npx",
-      "args": ["-y", "github:Casys-AI/mcp-erpnext", "--categories=sales,inventory,operations"],
+      "args": ["-y", "@casys/mcp-erpnext", "--categories=sales,inventory,operations"],
       "env": {
         "ERPNEXT_URL": "https://your-site.erpnext.com",
         "ERPNEXT_API_KEY": "your-api-key",
@@ -160,12 +160,32 @@ claude mcp list
 
 The script writes `opencode.jsonc` in the setup directory.
 
-Start OpenCode from that directory or copy the config into the project where you want to use it:
+OpenCode reads MCP config from the directory where you start it. If you run OpenCode from `~/frappe-mcp-setup`, it can use the generated MCP config there, but it will edit the setup repo. For real Frappe work, copy `opencode.jsonc` into the bench or app folder you want the agent to edit, then start OpenCode from that folder.
 
 ```bash
 cd ~/frappe-mcp-setup
 opencode
 ```
+
+For a Frappe bench, use the path to your own bench folder:
+
+```bash
+cp ~/frappe-mcp-setup/opencode.jsonc /path/to/frappe-bench/opencode.jsonc
+cd /path/to/frappe-bench
+opencode
+```
+
+For a specific custom app, use the app folder inside your bench:
+
+```bash
+cp ~/frappe-mcp-setup/opencode.jsonc /path/to/frappe-bench/apps/your_app/opencode.jsonc
+cd /path/to/frappe-bench/apps/your_app
+opencode
+```
+
+Replace `/path/to/frappe-bench` with your real bench path and `your_app` with the custom app you want to edit.
+
+You only need to enter the ERPNext API key and secret during setup. The generated `opencode.jsonc` contains those MCP environment values, so copying that file to your working project carries the MCP connection with it.
 
 ## Command Reference
 

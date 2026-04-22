@@ -39,7 +39,7 @@ FRAPPE_BENCH_PATH=""
 AI_CLIENT="both"
 CONFIG_MERGE_STRATEGY="append"
 AUTO_DETECT_MODE=false
-ERPNEXT_MCP_PACKAGE="${ERPNEXT_MCP_PACKAGE:-github:Casys-AI/mcp-erpnext}"
+ERPNEXT_MCP_PACKAGE="${ERPNEXT_MCP_PACKAGE:-@casys/mcp-erpnext}"
 
 #===============================================================================
 # CATEGORY DATA WITH ACTUAL TOKEN ESTIMATES
